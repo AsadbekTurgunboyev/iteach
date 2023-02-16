@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".HomeFragment.HomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:layout_height="?actionBarSize">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_35sdp"
+            app:civ_border_color="@color/secondColor"
+            app:civ_border_width="1dp"
+            android:src="@drawable/img"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true" />
+
+        <ImageView
+            android:layout_width="@dimen/_22sdp"
+            android:layout_height="@dimen/_22sdp"
+            android:layout_alignParentEnd="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?selectableItemBackgroundBorderless"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_baseline_settings_24"
+            app:tint="@color/primaryColor" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_146sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:elevation="@dimen/_5sdp"
+        android:background="@drawable/shape_rel">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:alpha=".8"
+            android:layout_marginHorizontal="@dimen/_5sdp"
+            android:background="@drawable/shape_secondcolor" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_140sdp"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/shape_color">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alpha=".7"
+                android:src="@drawable/_1_2"/>
+            <TextView
+                android:id="@+id/hisobShot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hisob balans"
+                android:alpha=".7"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_6sdp"
+                android:layout_marginHorizontal="@dimen/_6sdp"
+                android:textSize="@dimen/_14ssp"
+                android:textColor="@color/grey"/>
+            <TextView
+                android:id="@+id/valueFinance"
+                android:layout_width="wrap_content"
+                android:layout_below="@id/hisobShot"
+                android:text="230 000 "
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:textColor="@color/white"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:textSize="@dimen/_26ssp"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="so'm"
+                android:textSize="@dimen/_20ssp"
+                android:textColor="@color/white"
+                android:layout_alignBottom="@id/valueFinance"
+                android:layout_toEndOf="@id/valueFinance"/>
+
+        </RelativeLayout>
+    </RelativeLayout>
+ 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tezkor to'lov"
+        android:layout_marginHorizontal="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16ssp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/perRec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="@dimen/_10sdp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+
+        app:dividerColor="#E8E8E8"
+        android:layout_height="@dimen/_6sdp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16ssp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginHorizontal="@dimen/_10sdp"
+        android:text="Qo'shimcha"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            app:cardElevation="@dimen/_3sdp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            style="?attr/materialCardViewElevatedStyle"
+            android:background="?selectableItemBackground"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginVertical="@dimen/_10sdp"
+            android:layout_height="@dimen/_80sdp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+
+
+                android:paddingBottom="@dimen/_5sdp"
+
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/qwe"
+                    android:layout_width="@dimen/_50sdp"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:layout_height="@dimen/_50sdp"
+                   android:padding="@dimen/_5sdp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/students"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="O'quvchilar"
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:layout_below="@id/qwe"
+                    android:gravity="center"/>
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            app:cardElevation="@dimen/_3sdp"
+            android:layout_weight="1"
+            android:clickable="true"
+            style="?attr/materialCardViewElevatedStyle"
+
+            android:focusable="true"
+            android:background="?selectableItemBackground"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginVertical="@dimen/_10sdp"
+            android:layout_height="@dimen/_80sdp">
+
+
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            app:cardElevation="@dimen/_3sdp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            style="?attr/materialCardViewElevatedStyle"
+
+            android:background="?selectableItemBackground"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginVertical="@dimen/_10sdp"
+            android:layout_height="@dimen/_80sdp">
+
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            style="?attr/materialCardViewElevatedStyle"
+
+            app:cardElevation="@dimen/_3sdp"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?selectableItemBackground"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginVertical="@dimen/_10sdp"
+            android:layout_height="@dimen/_80sdp">
+
+
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

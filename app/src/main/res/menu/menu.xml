@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/icHome"
+        android:title="Uy"
+        android:icon="@drawable/home"
+        />
+    <item android:id="@+id/transac"
+        android:title="O'tkazmalar"
+        android:icon="@drawable/arrowsleftright"/>
+    <item android:icon="@drawable/chartpie"
+        android:title="Tafsilotlar"
+        android:id="@+id/charPie"/>
+</menu>
