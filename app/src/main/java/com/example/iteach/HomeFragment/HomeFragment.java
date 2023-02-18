@@ -14,9 +14,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.iteach.HomeFragment.adapter.PersonAdapter;
 import com.example.iteach.R;
+import com.example.iteach.model.PaymentReceiverModel;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class HomeFragment extends Fragment {
@@ -38,7 +48,28 @@ public class HomeFragment extends Fragment {
             }
         });
         animator.start();
-        personRec.setAdapter(new PersonAdapter(getContext()));
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("Clients");
+        ArrayList<PaymentReceiverModel> list = new ArrayList<>();
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    PaymentReceiverModel model = ds.getValue(PaymentReceiverModel.class);
+                    list.add(model);
+                }
+
+                personRec.setAdapter(new PersonAdapter(getContext(), list));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(getContext(), ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        rootRef.addListenerForSingleValueEvent(eventListener);
     }
 
     @Override

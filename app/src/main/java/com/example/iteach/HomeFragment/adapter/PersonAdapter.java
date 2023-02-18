@@ -12,8 +12,10 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iteach.R;
+import com.example.iteach.model.PaymentReceiverModel;
 import com.example.iteach.model.UserModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -21,10 +23,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.MyViewHolder> {
 
     Context context;
-    List<UserModel> list;
+    ArrayList<PaymentReceiverModel> list;
 
-    public PersonAdapter(Context context) {
+    public PersonAdapter(Context context, ArrayList<PaymentReceiverModel> list) {
         this.context = context;
+        this.list = list;
     }
 
     @NonNull
@@ -37,25 +40,24 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.MyViewHold
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if(position == 0){
-            holder.ic_add.setVisibility(View.VISIBLE);
-            holder.circle_person.setImageResource(R.drawable.shap);
-            holder.txt_name.setTextColor(ContextCompat.getColor(context,R.color.primaryColor));
-            holder.itemView.setOnClickListener(view -> showBottom());
-        }else {
+//        if(position == 0){
+//            holder.ic_add.setVisibility(View.VISIBLE);
+//            holder.circle_person.setImageResource(R.drawable.shap);
+//            holder.txt_name.setTextColor(ContextCompat.getColor(context,R.color.primaryColor));
+//            holder.txt_name.setText("Qo'shish");
+//            holder.itemView.setOnClickListener(view -> showBottom());
+//        }else {
             holder.ic_add.setVisibility(View.GONE);
             holder.circle_person.setImageResource(R.drawable.bear);
-            holder.itemView.setOnClickListener(view -> clickUser(position -1));
-        }
+            holder.txt_name.setText(list.get(position).name);
+            holder.itemView.setOnClickListener(view -> clickUser(position));
+//        }
 
     }
 
-
-
-
     @Override
     public int getItemCount() {
-        return 7;
+        return list.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
