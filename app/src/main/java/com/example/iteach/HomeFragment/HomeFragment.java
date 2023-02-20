@@ -3,6 +3,7 @@ package com.example.iteach.HomeFragment;
 import static com.example.iteach.Const.currencyFormatter;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,7 +19,10 @@ import android.widget.Toast;
 
 import com.example.iteach.HomeFragment.adapter.PersonAdapter;
 import com.example.iteach.R;
+import com.example.iteach.avtivities.TransactionActivity;
+import com.example.iteach.avtivities.WarehouseActivity;
 import com.example.iteach.model.PaymentReceiverModel;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +36,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     TextView valueFinance;
     RecyclerView personRec;
+    MaterialCardView oquvchilar, transactions;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -79,11 +84,29 @@ public class HomeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_home, container,    false);
         initViews(v);
 
+        oquvchilar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), WarehouseActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        transactions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), TransactionActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return v;
     }
 
     private void initViews(View v) {
         valueFinance = v.findViewById(R.id.valueFinance);
         personRec = v.findViewById(R.id.perRec);
+        oquvchilar = v.findViewById(R.id.card_oquvchilar);
+        transactions = v.findViewById(R.id.card_transaction);
     }
 }

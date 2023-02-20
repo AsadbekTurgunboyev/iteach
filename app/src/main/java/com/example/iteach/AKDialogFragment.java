@@ -51,7 +51,7 @@ public class AKDialogFragment extends DialogFragment {
         txtDesc = rootView.findViewById(R.id.edt_desc);
 
         Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        toolbar.setTitle("Dialog title");
+        toolbar.setTitle("Klient qo'shish..");
         ImageView imageView = rootView.findViewById(R.id.imageView);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         if (imageView.getVisibility() != View.VISIBLE){

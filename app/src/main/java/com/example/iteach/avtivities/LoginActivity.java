@@ -123,4 +123,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     };
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!(data.getData(KEY)).isEmpty()){
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
+    }
 }
