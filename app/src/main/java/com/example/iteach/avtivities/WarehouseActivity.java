@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 public class WarehouseActivity extends AppCompatActivity {
 
@@ -35,13 +36,36 @@ public class WarehouseActivity extends AppCompatActivity {
 
     WarehouseAdapter adapter;
 
+    FirebaseDatabase database;
+    DatabaseReference reference;
+    ArrayList<Resource> list;
+ ValueEventListener eventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            list = new ArrayList<>();
+            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                Resource model = ds.getValue(Resource.class);
+                list.add(model);
+            }
+
+            adapter = new WarehouseAdapter(WarehouseActivity.this, list);
+            rv_resources.setAdapter(adapter);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Toast.makeText(WarehouseActivity.this, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_warehouse);
 
         initViews();
-
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference("Resources");
         btn_add_resource.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -49,28 +73,8 @@ public class WarehouseActivity extends AppCompatActivity {
             }
         });
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("Resources");
-        ArrayList<Resource> list = new ArrayList<>();
-        ValueEventListener eventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Resource model = ds.getValue(Resource.class);
-                    list.add(model);
-                }
-
-                adapter = new WarehouseAdapter(WarehouseActivity.this, list);
-                rv_resources.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(WarehouseActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        rootRef.addListenerForSingleValueEvent(eventListener);
+        reference.addValueEventListener(eventListener);
     }
 
     private void showBottomSheet() {
@@ -81,55 +85,44 @@ public class WarehouseActivity extends AppCompatActivity {
         TextInputLayout quantity = bottomSheetDialog.findViewById(R.id.edt_resource_quantity);
         MaterialButton btn_add = bottomSheetDialog.findViewById(R.id.btn_add_resource);
 
-        btn_add.setOnClickListener(new View.OnClickListener() {
+        Objects.requireNonNull(btn_add).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String txt_name = name.getEditText().getText().toString().trim();
-                String txt_quantity = quantity.getEditText().getText().toString().trim();
+                String txt_name = Objects.requireNonNull(Objects.requireNonNull(name).getEditText()).getText().toString().trim();
+                String txt_quantity = null;
+                if (quantity != null) {
+                    txt_quantity = Objects.requireNonNull(quantity.getEditText()).getText().toString().trim();
+                }
 
-                if (txt_name != "" && txt_quantity != ""){
-
-                    FirebaseDatabase db = FirebaseDatabase.getInstance();
-                    DatabaseReference reference = db.getReference().child("Resources").child(txt_name);
-
-                    reference.addValueEventListener(new ValueEventListener() {
+                if (txt_quantity != null && (!txt_name.isEmpty() || !txt_quantity.isEmpty())) {
+                    Resource model = new Resource(txt_name, txt_quantity);
+                    reference.push().setValue(model).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            Resource model = new Resource(txt_name, txt_quantity);
-
-                            reference.setValue(model).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isComplete()){
-                                        Toast.makeText(WarehouseActivity.this, "Saqlandi!", Toast.LENGTH_SHORT).show();
-                                        bottomSheetDialog.dismiss();
-                                        recreate();
-
-                                    } else {
-                                        Toast.makeText(WarehouseActivity.this, "Xatolik!", Toast.LENGTH_SHORT).show();
-                                        bottomSheetDialog.dismiss();
-                                    }
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Toast.makeText(WarehouseActivity.this, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(WarehouseActivity.this, "Saqlandi!", Toast.LENGTH_SHORT).show();
+                                bottomSheetDialog.dismiss();
+                            } else {
+                                Toast.makeText(WarehouseActivity.this, "Xatolik!", Toast.LENGTH_SHORT).show();
+                                bottomSheetDialog.dismiss();
+                            }
                         }
                     });
 
-                } else {
-                    Toast.makeText(WarehouseActivity.this, "Malumotlarni kiriting!", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
-
         bottomSheetDialog.show();
     }
 
-    private void initViews() {
-        btn_add_resource = findViewById(R.id.btn_addResource);
-        rv_resources = findViewById(R.id.rv_resources);
-    }
+
+
+            private void initViews() {
+                btn_add_resource = findViewById(R.id.btn_addResource);
+                rv_resources = findViewById(R.id.rv_resources);
+            }
+
+
+
 }

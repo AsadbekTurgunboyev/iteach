@@ -5,6 +5,9 @@ public class Resource {
     String name;
     String quantity;
 
+    public Resource() {
+    }
+
     public Resource(String name, String quantity) {
         this.name = name;
         this.quantity = quantity;
@@ -26,6 +29,5 @@ public class Resource {
         this.quantity = quantity;
     }
 
-    public Resource() {
-    }
+
 }
