@@ -1,6 +1,7 @@
 package com.example.iteach.HomeFragment.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iteach.R;
+import com.example.iteach.avtivities.ClientActivity;
 import com.example.iteach.model.PaymentReceiverModel;
 import com.example.iteach.model.UserModel;
 
@@ -33,26 +35,30 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.MyViewHold
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.person_item,parent,false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.person_item, parent, false);
 
         return new MyViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-//        if(position == 0){
-//            holder.ic_add.setVisibility(View.VISIBLE);
-//            holder.circle_person.setImageResource(R.drawable.shap);
-//            holder.txt_name.setTextColor(ContextCompat.getColor(context,R.color.primaryColor));
-//            holder.txt_name.setText("Qo'shish");
-//            holder.itemView.setOnClickListener(view -> showBottom());
-//        }else {
-            holder.ic_add.setVisibility(View.GONE);
-            holder.circle_person.setImageResource(R.drawable.bear);
-            holder.txt_name.setText(list.get(position).name);
-            holder.itemView.setOnClickListener(view -> clickUser(position));
-//        }
 
+        holder.ic_add.setVisibility(View.GONE);
+        holder.circle_person.setImageResource(R.drawable.bear);
+        holder.txt_name.setText(list.get(position).name);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ClientActivity.class);
+
+                String key = list.get(position).getKey();
+
+                intent.putExtra("key", key);
+
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -64,6 +70,7 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.MyViewHold
         CircleImageView circle_person;
         ImageView ic_add;
         TextView txt_name;
+
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -72,11 +79,5 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.MyViewHold
             txt_name = itemView.findViewById(R.id.txt_name);
 
         }
-    }
-    private void showBottom() {
-    }
-    private void clickUser(int i) {
-
-
     }
 }

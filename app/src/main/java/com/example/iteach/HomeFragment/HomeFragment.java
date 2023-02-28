@@ -88,6 +88,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getActivity(), WarehouseActivity.class);
+                intent.putExtra("action","ware");
                 startActivity(intent);
             }
         });

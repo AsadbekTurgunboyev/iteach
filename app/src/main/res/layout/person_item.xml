@@ -6,15 +6,15 @@
     android:layout_gravity="center"
     android:layout_marginHorizontal="@dimen/_8sdp"
     android:orientation="vertical"
+    android:clickable="true"
+    android:background="?selectableItemBackground"
+    android:focusable="true"
     android:layout_marginVertical="@dimen/_5sdp"
     android:gravity="center">
 
 
     <FrameLayout
         android:layout_width="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:background="?selectableItemBackgroundBorderless"
         android:layout_height="wrap_content">
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/circle_person"

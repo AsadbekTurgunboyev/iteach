@@ -5,15 +5,15 @@ public class PaymentReceiverModel {
     public String surname;
     public String desc;
     public String key;
+    public String money_left;
 
-    public PaymentReceiverModel(String name, String surname, String desc, String key) {
+    public PaymentReceiverModel(String name, String surname, String desc, String key, String money_left) {
         this.name = name;
         this.surname = surname;
         this.desc = desc;
         this.key = key;
+        this.money_left = money_left;
     }
-
-    public PaymentReceiverModel() {}
 
     public String getName() {
         return name;
@@ -46,4 +46,14 @@ public class PaymentReceiverModel {
     public void setKey(String key) {
         this.key = key;
     }
+
+    public String getMoney_left() {
+        return money_left;
+    }
+
+    public void setMoney_left(String money_left) {
+        this.money_left = money_left;
+    }
+
+    public PaymentReceiverModel() {}
 }

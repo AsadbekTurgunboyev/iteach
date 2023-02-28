@@ -130,7 +130,7 @@ public class AKDialogFragment extends DialogFragment {
                 String desc = txtDesc.getEditText().getText().toString().trim();
                 String key = UUID.randomUUID().toString();
 
-                PaymentReceiverModel model = new PaymentReceiverModel(name, surname, desc, key);
+                PaymentReceiverModel model = new PaymentReceiverModel(name, surname, desc, key, "0");
 
                 FirebaseDatabase realtime = FirebaseDatabase.getInstance();
                 DatabaseReference reference = realtime.getReference("Clients").child(key);
