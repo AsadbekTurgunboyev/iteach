@@ -3,7 +3,9 @@ package com.example.iteach.avtivities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -42,7 +44,7 @@ public class ClientActivity extends AppCompatActivity {
             model = snapshot.getValue(PaymentReceiverModel.class);
 
             assert model != null;
-            txt_money_left.setText(model.getMoney_left());
+            txt_money_left.setText(model.getMoney_left() + " so'm");
             txt_name.setText(model.getName());
             txt_surname.setText(model.getSurname());
             txt_desc.setText(model.getDesc());
@@ -50,7 +52,7 @@ public class ClientActivity extends AppCompatActivity {
 
         @Override
         public void onCancelled(@NonNull DatabaseError error) {
-
+            Toast.makeText(ClientActivity.this, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -77,6 +79,12 @@ public class ClientActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(ClientActivity.this, WarehouseActivity.class);
                 intent.putExtra("action", "give_product");
+
+                SharedPreferences sharedPreferences = getSharedPreferences("MyPreference", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("key", key);
+                editor.apply();
+
                 startActivity(intent);
             }
         });
@@ -85,7 +93,7 @@ public class ClientActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (Integer.parseInt(txt_money_left.getText().toString()) > 0) {
+                if (Integer.parseInt(model.getMoney_left()) > 0) {
                     showPaymentBottomSheet();
                 } else {
                     Toast.makeText(ClientActivity.this, "Bu odam ni sizdan qarzi yo'q!", Toast.LENGTH_SHORT).show();
@@ -126,7 +134,7 @@ public class ClientActivity extends AppCompatActivity {
                     String key = getIntent().getStringExtra("key");
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Clients").child(key).child("money_left");
 
-                    int db_money_left = Integer.parseInt(txt_money_left.getText().toString());
+                    int db_money_left = Integer.parseInt(model.getMoney_left());
 
                     if (db_money_left >= money_paid) {
                         String new_money_left = String.valueOf((db_money_left - money_paid));
@@ -135,9 +143,32 @@ public class ClientActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isComplete()) {
-                                    Toast.makeText(ClientActivity.this, "Qarz yangilandi!", Toast.LENGTH_SHORT).show();
 
-                                    bottomSheetDialog.dismiss();
+                                    DatabaseReference main_ref = FirebaseDatabase.getInstance().getReference().child("money");
+
+                                    main_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String money_there = (String) snapshot.getValue();
+
+                                            String new_balance = String.valueOf(Integer.parseInt(money_there) + money_paid);
+
+                                            main_ref.setValue(new_balance).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    Toast.makeText(ClientActivity.this, "Qarz yangilandi!", Toast.LENGTH_SHORT).show();
+
+                                                    bottomSheetDialog.dismiss();
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+
                                 } else {
                                     Toast.makeText(ClientActivity.this, "Xatolik!", Toast.LENGTH_SHORT).show();
                                     bottomSheetDialog.dismiss();

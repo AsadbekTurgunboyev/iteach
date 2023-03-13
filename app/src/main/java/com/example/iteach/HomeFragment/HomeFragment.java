@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.iteach.HomeFragment.adapter.PersonAdapter;
 import com.example.iteach.R;
+import com.example.iteach.avtivities.MyLoansActivity;
 import com.example.iteach.avtivities.TransactionActivity;
 import com.example.iteach.avtivities.WarehouseActivity;
 import com.example.iteach.model.PaymentReceiverModel;
@@ -36,7 +37,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     TextView valueFinance;
     RecyclerView personRec;
-    MaterialCardView oquvchilar, transactions;
+    MaterialCardView oquvchilar, transactions, my_debts;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -45,14 +46,30 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ValueAnimator animator = ValueAnimator.ofInt(0, 23000000);
-        animator.setDuration(2000);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            public void onAnimationUpdate(ValueAnimator animation) {
-                valueFinance.setText(currencyFormatter(animation.getAnimatedValue().toString()));
+
+        DatabaseReference money_ref = FirebaseDatabase.getInstance().getReference("money");
+
+        money_ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int account_money = Integer.parseInt((String) snapshot.getValue());
+
+                ValueAnimator animator = ValueAnimator.ofInt(0, account_money);
+                animator.setDuration(1500);
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        valueFinance.setText(currencyFormatter(animation.getAnimatedValue().toString()));
+                    }
+                });
+                animator.start();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
-        animator.start();
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("Clients");
         ArrayList<PaymentReceiverModel> list = new ArrayList<>();
@@ -101,6 +118,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        my_debts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), MyLoansActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return v;
     }
 
@@ -109,5 +134,6 @@ public class HomeFragment extends Fragment {
         personRec = v.findViewById(R.id.perRec);
         oquvchilar = v.findViewById(R.id.card_oquvchilar);
         transactions = v.findViewById(R.id.card_transaction);
+        my_debts = v.findViewById(R.id.card_my_loans);
     }
 }

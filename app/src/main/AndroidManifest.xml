@@ -17,10 +17,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".avtivities.ClientActivity"
+            android:name=".avtivities.MyLoansActivity"
             android:parentActivityName=".MainActivity"
+            android:theme="@style/WarehourseTheme"
+            android:exported="false" />
+        <activity
+            android:name=".avtivities.ClientActivity"
             android:exported="false"
-            android:theme="@style/TransactionTheme"/>
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/TransactionTheme" />
         <activity
             android:name=".avtivities.TransactionActivity"
             android:exported="false"

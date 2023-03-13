@@ -1,37 +1,31 @@
 package com.example.iteach.HomeFragment.adapter;
 
 import android.content.Context;
-import android.speech.tts.Voice;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.iteach.R;
-import com.example.iteach.model.PaymentReceiverModel;
 import com.example.iteach.model.Resource;
-import com.example.iteach.model.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class WarehouseAdapter extends RecyclerView.Adapter<WarehouseAdapter.MyViewHolder> {
 
     Context context;
@@ -85,6 +79,28 @@ public class WarehouseAdapter extends RecyclerView.Adapter<WarehouseAdapter.MyVi
 
                                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Resources").child(list.get(position).getName()).child("quantity");
 
+                                    int new_debt = Integer.parseInt(list.get(position).getPrice()) * needed_amount;
+
+                                    SharedPreferences sharedPreferences = context.getSharedPreferences("MyPreference", Context.MODE_PRIVATE);
+                                    String key = sharedPreferences.getString("key", "");
+
+                                    DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference().child("Clients").child(key).child("money_left");
+
+                                    reference2.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            int old_debt = Integer.parseInt(snapshot.getValue().toString());
+
+                                            int overall_debt = new_debt + old_debt;
+
+                                            reference2.setValue(String.valueOf(overall_debt));
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
                                     reference.setValue(updated_amount_string).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {

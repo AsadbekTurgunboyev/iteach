@@ -234,17 +234,42 @@
 
             <com.google.android.material.card.MaterialCardView
                 style="?attr/materialCardViewElevatedStyle"
+                android:id="@+id/card_my_loans"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/_80sdp"
                 android:layout_marginHorizontal="@dimen/_10sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
                 android:layout_weight="1"
-
                 android:background="?selectableItemBackground"
                 android:clickable="true"
                 android:focusable="true"
                 app:cardElevation="@dimen/_3sdp">
 
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="@dimen/_5sdp">
+
+                    <ImageView
+                        android:id="@+id/img_loans"
+                        android:layout_width="@dimen/_50sdp"
+                        android:layout_height="@dimen/_50sdp"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginHorizontal="@dimen/_10sdp"
+                        android:padding="@dimen/_5sdp"
+                        android:src="@drawable/debt" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/img_loans"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="Meni qarzlarim"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12ssp" />
+                </RelativeLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
