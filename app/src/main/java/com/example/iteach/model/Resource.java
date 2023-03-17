@@ -8,19 +8,29 @@ public class Resource {
     String quantity;
     String price;
 
+    String currency;
     String overall_price;
     String payment;
 
     public Resource() {
     }
 
-    public Resource(String name, String store_name, String quantity, String price, String overall_price, String payment) {
+    public Resource(String name, String store_name, String quantity, String price, String currency, String overall_price, String payment) {
         this.name = name;
         this.store_name = store_name;
         this.quantity = quantity;
         this.price = price;
+        this.currency = currency;
         this.overall_price = overall_price;
         this.payment = payment;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public String getOverall_price() {

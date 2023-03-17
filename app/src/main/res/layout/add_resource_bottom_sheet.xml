@@ -71,14 +71,50 @@
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/edt_resource_price"
+        android:id="@+id/line_currency"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_btn_sum"
+            android:layout_marginLeft="@dimen/_25sdp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="So'm"
+            android:textSize="@dimen/_13ssp"
+            android:layout_marginTop="@dimen/_1sdp"/>
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/radio_btn_dollar"
+            android:layout_marginLeft="@dimen/_25sdp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dollar"
+            android:textSize="@dimen/_13ssp"
+            android:layout_marginTop="@dimen/_1sdp"/>
+
+    </LinearLayout>
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_resource_quantity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         app:boxBackgroundColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/edt_resource_price"
+        app:layout_constraintTop_toBottomOf="@id/line_currency"
         app:startIconDrawable="@drawable/ic_bar_chart">
 
         <com.google.android.material.textfield.TextInputEditText
