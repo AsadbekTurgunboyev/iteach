@@ -163,6 +163,8 @@ public class WarehouseActivity extends AppCompatActivity implements TextWatcher{
 
                                             String txt_currency = "so'm";
 
+                                            //fsdjfkdjsfl
+
                                             if (btn_dollar.isChecked()){
                                                 txt_currency = "dollar";
                                             }
