@@ -1,21 +1,21 @@
 package com.example.iteach.avtivities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.iteach.HomeFragment.adapter.PersonAdapter;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.iteach.HomeFragment.adapter.WarehouseAdapter;
 import com.example.iteach.R;
 import com.example.iteach.model.LoanModel;
-import com.example.iteach.model.PaymentReceiverModel;
 import com.example.iteach.model.Resource;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -30,17 +30,51 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Objects;
 
-public class WarehouseActivity extends AppCompatActivity {
+public class WarehouseActivity extends AppCompatActivity implements TextWatcher{
 
-    FloatingActionButton btn_add_resource;
-    RecyclerView rv_resources;
+    private FloatingActionButton btn_add_resource;
+    private RecyclerView rv_resources;
 
-    String action = "";
+    private String action;
+    private TextView overall_price;
+    private MaterialButton btn_add;
 
-    WarehouseAdapter adapter;
+    private DatabaseReference resourceRef;
+    private BottomSheetDialog bottomSheetDialog;
+    private TextInputLayout name, store_name, price, quantity, payment;
+
+    final String EMPTY_STRING = "";
+    final int DEFAULT_QUANTITY = 0;
+    final int DEFAULT_PRICE = 0;
+    final int DEFAULT_PAYMENT = 0;
+
+    private static final String MESSAGE_FIRST_KILO_PRICE = "Birinchi bir kiloga narxini kiriting!";
+    private static final String MESSAGE_OVERPAID = "Ortiqcha pul tolandi!";
+    private static final String MESSAGE_MISSING_DATA = "Ma'lumotlarni kiriting!";
+    private static final String MESSAGE_ERROR = "Xatolik!";
+
+
+    private final ValueEventListener eventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            ArrayList<Resource> mResourceList = new ArrayList<>();
+            for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                Resource model = ds.getValue(Resource.class);
+                mResourceList.add(model);
+            }
+
+            WarehouseAdapter adapter = new WarehouseAdapter(WarehouseActivity.this, mResourceList, action);
+            rv_resources.setAdapter(adapter);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Toast.makeText(WarehouseActivity.this, "" + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,101 +82,60 @@ public class WarehouseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_warehouse);
 
         initViews();
+        initVars();
 
         action = getIntent().getStringExtra("action");
-        if (action.equals("give_product") ) {
+        if (action.equals("give_product")) {
 
             Objects.requireNonNull(getSupportActionBar()).setTitle("Mahsulot o'tkazish");
-
             btn_add_resource.setVisibility(View.INVISIBLE);
 
-        }else {
+        } else {
+
             Objects.requireNonNull(getSupportActionBar()).setTitle("Ombor");
 
         }
-        btn_add_resource.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showBottomSheet();
-            }
-        });
+        btn_add_resource.setOnClickListener(view -> showBottomSheet());
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference("Resources");
-        ArrayList<Resource> list = new ArrayList<>();
-        ValueEventListener eventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        resourceRef.addValueEventListener(eventListener);
+    }
 
-                for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Resource model = ds.getValue(Resource.class);
-                    list.add(model);
-                }
+    private void initVars() {
+        resourceRef = FirebaseDatabase.getInstance().getReference("Resources");
+        View bottomSheetView = LayoutInflater.from(this).inflate(R.layout.add_resource_bottom_sheet, null);
+        bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(bottomSheetView);
 
-                adapter = new WarehouseAdapter(WarehouseActivity.this, list, action);
-                rv_resources.setAdapter(adapter);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(WarehouseActivity.this, ""+databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        };
-
-        rootRef.addListenerForSingleValueEvent(eventListener);
     }
 
     private void showBottomSheet() {
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        bottomSheetDialog.setContentView(R.layout.add_resource_bottom_sheet);
+        initBottom(bottomSheetDialog);
 
-        TextInputLayout name = bottomSheetDialog.findViewById(R.id.edt_resource_name);
-        TextInputLayout store_name = bottomSheetDialog.findViewById(R.id.edt_store_name);
-        TextInputLayout quantity = bottomSheetDialog.findViewById(R.id.edt_resource_quantity);
-        TextView overall_price = bottomSheetDialog.findViewById(R.id.txt_overall_price);
-        TextInputLayout price = bottomSheetDialog.findViewById(R.id.edt_resource_price);
-        TextInputLayout payment = bottomSheetDialog.findViewById(R.id.edt_payment);
-        MaterialButton btn_add = bottomSheetDialog.findViewById(R.id.btn_add_resource);
+        String txt_overall_price = EMPTY_STRING;
 
-        String txt_overall_price = "";
+        Objects.requireNonNull(quantity.getEditText()).addTextChangedListener(this);
 
-        if (price.getEditText().getText().toString() == ""){
-            Toast.makeText(WarehouseActivity.this, "Birinchi bir kiloga narxini kiriting!", Toast.LENGTH_SHORT).show();
-        } else {
-            quantity.getEditText().addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    overall_price.setText(String.valueOf(Integer.parseInt(quantity.getEditText().getText().toString()) * Integer.parseInt(price.getEditText().getText().toString())) + " so'm");
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-
-                }
-            });
-        }
 
         btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String txt_name = name.getEditText().getText().toString().trim();
+                String txt_name = name.getEditText().getEditableText().toString().trim();
                 String txt_store_name = store_name.getEditText().getText().toString().trim();
                 String txt_quantity = quantity.getEditText().getText().toString().trim();
                 String txt_price = price.getEditText().getText().toString().trim();
                 String txt_payment = payment.getEditText().getText().toString().trim();
 
-                if (txt_name != "" && txt_store_name != "" && txt_quantity != "" && txt_price != "" && txt_payment != ""){
+                if (TextUtils.isEmpty(Objects.requireNonNull(price.getEditText()).getEditableText().toString())) {
+                    Toast.makeText(WarehouseActivity.this, MESSAGE_FIRST_KILO_PRICE, Toast.LENGTH_SHORT).show();
+                }
+                if (!txt_name.isEmpty() && !txt_store_name.isEmpty() && !txt_quantity.isEmpty() && !txt_price.isEmpty() && !txt_payment.isEmpty()) {
 
-                    if (Integer.parseInt(txt_payment) > Integer.parseInt(txt_overall_price)){
+                    if (Integer.parseInt(txt_payment) > Integer.parseInt(overall_price.getText().toString())) {
                         Toast.makeText(WarehouseActivity.this, "Ortiqcha pul tolandi!", Toast.LENGTH_SHORT).show();
                     } else {
                         String loan = String.valueOf(Integer.parseInt(txt_price) - Integer.parseInt(txt_payment));
 
-                        if (Integer.parseInt(loan) == 0){
+                        if (Integer.parseInt(loan) == 0) {
 
                             DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("money");
 
@@ -173,7 +166,7 @@ public class WarehouseActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
-                                    Toast.makeText(WarehouseActivity.this, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(WarehouseActivity.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
 
@@ -197,7 +190,7 @@ public class WarehouseActivity extends AppCompatActivity {
                                     reference1.setValue(model).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isComplete()){
+                                            if (task.isComplete()) {
 
                                                 DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference().child("Resources").child(txt_name);
 
@@ -220,7 +213,7 @@ public class WarehouseActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
-                                    Toast.makeText(WarehouseActivity.this, ""+error.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(WarehouseActivity.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
                                     bottomSheetDialog.dismiss();
                                 }
                             });
@@ -238,8 +231,39 @@ public class WarehouseActivity extends AppCompatActivity {
         bottomSheetDialog.show();
     }
 
+    private void initBottom(BottomSheetDialog bottomSheetDialog) {
+        name = bottomSheetDialog.findViewById(R.id.edt_resource_name);
+        store_name = bottomSheetDialog.findViewById(R.id.edt_store_name);
+        quantity = bottomSheetDialog.findViewById(R.id.edt_resource_quantity);
+        overall_price = bottomSheetDialog.findViewById(R.id.txt_overall_price);
+        price = bottomSheetDialog.findViewById(R.id.edt_resource_price);
+        payment = bottomSheetDialog.findViewById(R.id.edt_payment);
+        btn_add = bottomSheetDialog.findViewById(R.id.btn_add_resource);
+    }
+
     private void initViews() {
         btn_add_resource = findViewById(R.id.btn_addResource);
         rv_resources = findViewById(R.id.rv_resources);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        try {
+            int mPrice = Integer.parseInt(charSequence.toString()) * Integer.parseInt(price.getEditText().getText().toString());
+
+            overall_price.setText(String.valueOf(mPrice));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+
     }
 }
