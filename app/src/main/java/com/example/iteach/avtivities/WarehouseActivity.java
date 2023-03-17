@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,8 +43,12 @@ public class WarehouseActivity extends AppCompatActivity implements TextWatcher{
     private MaterialButton btn_add;
 
     private DatabaseReference resourceRef;
+
+    private DatabaseReference money_ref;
     private BottomSheetDialog bottomSheetDialog;
     private TextInputLayout name, store_name, price, quantity, payment;
+
+    private RadioButton btn_sum, btn_dollar;
 
     final String EMPTY_STRING = "";
     final int DEFAULT_QUANTITY = 0;
@@ -111,8 +116,6 @@ public class WarehouseActivity extends AppCompatActivity implements TextWatcher{
     private void showBottomSheet() {
         initBottom(bottomSheetDialog);
 
-        String txt_overall_price = EMPTY_STRING;
-
         Objects.requireNonNull(quantity.getEditText()).addTextChangedListener(this);
 
 
@@ -125,34 +128,46 @@ public class WarehouseActivity extends AppCompatActivity implements TextWatcher{
                 String txt_price = price.getEditText().getText().toString().trim();
                 String txt_payment = payment.getEditText().getText().toString().trim();
 
+                String txt_overall_price = overall_price.getText().toString().trim();
+
+                if (btn_sum.isChecked()){
+                    money_ref = FirebaseDatabase.getInstance().getReference("Finance").child("Balance").child("money_sum");
+                } else {
+                    money_ref = FirebaseDatabase.getInstance().getReference("Finance").child("Balance").child("money_dollar");
+                }
+
                 if (TextUtils.isEmpty(Objects.requireNonNull(price.getEditText()).getEditableText().toString())) {
                     Toast.makeText(WarehouseActivity.this, MESSAGE_FIRST_KILO_PRICE, Toast.LENGTH_SHORT).show();
                 }
-                if (!txt_name.isEmpty() && !txt_store_name.isEmpty() && !txt_quantity.isEmpty() && !txt_price.isEmpty() && !txt_payment.isEmpty()) {
+                if (!txt_name.isEmpty() && !txt_store_name.isEmpty() && !txt_quantity.isEmpty() && !txt_price.isEmpty()) {
 
                     if (Integer.parseInt(txt_payment) > Integer.parseInt(overall_price.getText().toString())) {
                         Toast.makeText(WarehouseActivity.this, "Ortiqcha pul tolandi!", Toast.LENGTH_SHORT).show();
                     } else {
-                        String loan = String.valueOf(Integer.parseInt(txt_price) - Integer.parseInt(txt_payment));
+                        String loan = String.valueOf(Integer.parseInt(txt_overall_price) - Integer.parseInt(txt_payment));
 
                         if (Integer.parseInt(loan) == 0) {
 
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("money");
-
-                            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            money_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     String money_there = snapshot.getValue().toString();
 
                                     String new_balance = String.valueOf(Integer.parseInt(money_there) - Integer.parseInt(txt_payment));
 
-                                    reference.setValue(new_balance).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    money_ref.setValue(new_balance).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
 
                                             DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference().child("Resources").child(txt_name);
 
-                                            Resource r_model = new Resource(txt_name, txt_store_name, txt_quantity, txt_price, txt_overall_price, txt_payment);
+                                            String txt_currency = "so'm";
+
+                                            if (btn_dollar.isChecked()){
+                                                txt_currency = "dollar";
+                                            }
+
+                                            Resource r_model = new Resource(txt_name, txt_store_name, txt_quantity, txt_price, txt_currency, txt_overall_price, txt_payment);
                                             reference1.setValue(r_model).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
@@ -172,16 +187,14 @@ public class WarehouseActivity extends AppCompatActivity implements TextWatcher{
 
                         } else {
 
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("money");
-
-                            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            money_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     String money_there = snapshot.getValue().toString();
 
                                     String new_balance = String.valueOf(Integer.parseInt(money_there) - Integer.parseInt(txt_payment));
 
-                                    reference.setValue(new_balance);
+                                    money_ref.setValue(new_balance);
 
                                     DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference().child("Finance").child("MyLoans").child(txt_store_name);
 
@@ -194,7 +207,13 @@ public class WarehouseActivity extends AppCompatActivity implements TextWatcher{
 
                                                 DatabaseReference reference2 = FirebaseDatabase.getInstance().getReference().child("Resources").child(txt_name);
 
-                                                Resource r_model = new Resource(txt_name, txt_store_name, txt_quantity, txt_price, txt_overall_price, txt_payment);
+                                                String txt_currency = "so'm";
+
+                                                if (btn_dollar.isChecked()){
+                                                    txt_currency = "dollar";
+                                                }
+
+                                                Resource r_model = new Resource(txt_name, txt_store_name, txt_quantity, txt_price, txt_currency, txt_overall_price, txt_payment);
                                                 reference2.setValue(r_model).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
                                                     public void onComplete(@NonNull Task<Void> task) {
@@ -239,6 +258,10 @@ public class WarehouseActivity extends AppCompatActivity implements TextWatcher{
         price = bottomSheetDialog.findViewById(R.id.edt_resource_price);
         payment = bottomSheetDialog.findViewById(R.id.edt_payment);
         btn_add = bottomSheetDialog.findViewById(R.id.btn_add_resource);
+        btn_sum = bottomSheetDialog.findViewById(R.id.radio_btn_sum);
+        btn_dollar = bottomSheetDialog.findViewById(R.id.radio_btn_dollar);
+
+        btn_sum.setChecked(true);
     }
 
     private void initViews() {

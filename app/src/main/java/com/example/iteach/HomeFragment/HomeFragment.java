@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        DatabaseReference money_ref = FirebaseDatabase.getInstance().getReference("money");
+        DatabaseReference money_ref = FirebaseDatabase.getInstance().getReference("Finance").child("Balance").child("money_sum");
 
         money_ref.addValueEventListener(new ValueEventListener() {
             @Override
